@@ -1,17 +1,8 @@
-if (window.location !== window.top.location || window.location.href && !window.location.href.match(/strobe\.cool|192\.168/)) {
-    top.location.href = "https://strobe.cool/"
-}
-(function() {
-    window.requestAnimationFrame = window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.msRequestAnimationFrame || function(t) {
-        return setTimeout(t, 1e3 / 60)
-    }
-    ;
-    window.AudioContext = window.AudioContext || window.webkitAudioContext;
-    document.exitFullscreen = document.exitFullscreen || document.webkitExitFullscreen || document.webkitCancelFullScreen || document.mozCancelFullScreen || document.msExitFullscreen;
+
     try {
-        var e = document.querySelector.bind(document)
-          , t = document.querySelectorAll.bind(document)
-          , n = document.addEventListener.bind(document);
+        // var e = document.querySelector.bind(document)
+        //   , t = document.querySelectorAll.bind(document)
+        //   , n = document.addEventListener.bind(document);
         Element.prototype.get = Element.prototype.querySelector;
         Element.prototype.show = function() {
             this.classList.remove("hidden")
@@ -40,6 +31,8 @@ if (window.location !== window.top.location || window.location.href && !window.l
             this.classList.add("right")
         }
     } catch (t) {}
+
+
     Date.now = Date.now || function() {
         return (new Date).getTime()
     }
@@ -47,6 +40,7 @@ if (window.location !== window.top.location || window.location.href && !window.l
     if (!("performance"in window)) {
         window.performance = {}
     }
+
     if (!("now"in window.performance)) {
         var o = Date.now();
         if (performance.timing && performance.timing.navigationStart) {
@@ -427,5 +421,4 @@ if (window.location !== window.top.location || window.location.href && !window.l
         }
     }
     n("DOMContentLoaded", W, false)
-}
-)();
+

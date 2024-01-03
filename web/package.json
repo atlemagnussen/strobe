@@ -1,0 +1,30 @@
+{
+  "name": "strobe",
+  "version": "1.0.0",
+  "description": "test",
+  "type": "module",
+  "main": "dist/app.es.js",
+  "exports": {
+    ".": "./dist/app.es.js"
+  },
+  "scripts": {
+    "start": "vite",
+    "build": "tsc && vite build",
+    "build:watch": "tsc && vite build --watch"
+  },
+  "keywords": [
+    "test"
+  ],
+  "author": "atlemagnussen",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^20.10.6",
+    "@types/psl": "^1.1.3",
+    "vite": "^5.0.10"
+  },
+  "dependencies": {
+    "lit": "^3.1.0",
+    "router-slot": "^1.5.5",
+    "three": "^0.160.0"
+  }
+}
