@@ -1,0 +1,14 @@
+{
+  "name": "strobe",
+  "version": "1.0.0",
+  "description": "test",
+  "main": "index.js",
+  "scripts": {
+    "test": "serve src"
+  },
+  "keywords": [
+    "test"
+  ],
+  "author": "atlemagnussen",
+  "license": "ISC"
+}
