@@ -7,7 +7,9 @@ export class ThreeWorldRenderer {
     renderer: THREE.WebGLRenderer
     scene: THREE.Scene
     camera: THREE.Camera
+    animFrame = 0
 
+    cube: THREE.Mesh | null = null
     constructor(canvas: HTMLCanvasElement, width: number, height: number) {
 
         canvas.height = height
@@ -26,14 +28,19 @@ export class ThreeWorldRenderer {
         this.renderer.setSize(width, height)
         this.camera.position.z = 15
 
-        this.renderer.render(this.scene, this.camera)
-
         this.addCube()
         this.animate()
     }
     animate() {
-        requestAnimationFrame(this.animate)
-        this.renderer.render(this.scene, this.camera)
+        const renderer = this.renderer
+        renderer.xr.enabled = true
+        renderer.setAnimationLoop(() => {
+            if (this.cube) {
+                this.cube.rotation.x += 0.01
+                this.cube.rotation.y += 0.01
+            }
+            renderer.render(this.scene, this.camera)
+        })
     }
     
     getVRButton() {
@@ -41,12 +48,12 @@ export class ThreeWorldRenderer {
     }
 
     addCube() {
-        const geometry = new THREE.BoxGeometry( 1, 1, 1 );
-        const material = new THREE.MeshBasicMaterial( { color: 0x0000ff } );
-        const cube = new THREE.Mesh( geometry, material );
-        this.scene.add( cube );
+        const geometry = new THREE.BoxGeometry(1, 1, 1 )
+        const material = new THREE.MeshBasicMaterial({ color: 0x0000ff })
+        this.cube = new THREE.Mesh( geometry, material)
+        this.scene.add(this.cube)
 
-        this.camera.position.z = 5;
+        this.camera.position.z = 5
     }
 
 }

@@ -30,8 +30,8 @@ export class StrobeWorld extends LitElement {
         if (!canvasEl)
             return
         this.threeRenderer = new ThreeWorldRenderer(canvasEl as HTMLCanvasElement, this.clientWidth, this.clientHeight)
-        // const btn = this.threeRenderer.getVRButton()
-        // this.shadowRoot?.appendChild(btn)
+        const btn = this.threeRenderer.getVRButton()
+        this.shadowRoot?.prepend(btn)
     }
     
 
