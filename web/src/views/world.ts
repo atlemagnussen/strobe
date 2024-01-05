@@ -15,7 +15,7 @@ export class StrobeWorld extends LitElement {
             padding: 1rem;
         }
         canvas {
-            background-color: #555;
+            background-color: #F00;
         }
     `
 

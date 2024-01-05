@@ -17,7 +17,14 @@ export class ThreeWorldRenderer {
 
         const aspectRatio = width / height
         this.scene = new THREE.Scene()
-        this.camera = new THREE.PerspectiveCamera(75, aspectRatio, 0.1, 1000)
+        this.scene.background = new THREE.Color(0x0096ff)
+
+        
+        this.camera = new THREE.PerspectiveCamera(45, aspectRatio, 1, 5000)
+		this.camera.position.set(0, 75, 160)
+        //this.camera.position.z = 15
+        //this.camera = new THREE.PerspectiveCamera(75, aspectRatio, 0.1, 1000)
+
         this.canvasEl = canvas
         this.renderer = new THREE.WebGLRenderer({
             canvas, 
@@ -26,9 +33,11 @@ export class ThreeWorldRenderer {
 
         this.renderer.setPixelRatio(window.devicePixelRatio)
         this.renderer.setSize(width, height)
-        this.camera.position.z = 15
 
+        this.addRoom()
         this.addCube()
+        this.addLight()
+
         this.animate()
     }
     animate() {
@@ -47,13 +56,25 @@ export class ThreeWorldRenderer {
         return VRButton.createButton(this.renderer)
     }
 
+    addLight() {
+        const sunLight = new THREE.DirectionalLight('rgb(255,255,255)', 3)
+        sunLight.position.set(5, 7, - 1)
+		sunLight.lookAt(this.scene.position)
+		this.scene.add(sunLight)
+    }
     addCube() {
-        const geometry = new THREE.BoxGeometry(1, 1, 1 )
+        const geometry = new THREE.BoxGeometry(1, 1, 1)
         const material = new THREE.MeshBasicMaterial({ color: 0x0000ff })
         this.cube = new THREE.Mesh( geometry, material)
         this.scene.add(this.cube)
 
-        this.camera.position.z = 5
+        this.camera.position.z = 10
     }
 
+    addRoom() {
+        const planeGeo = new THREE.PlaneGeometry(100.1, 100.1)
+        const planeBottom = new THREE.Mesh( planeGeo, new THREE.MeshPhongMaterial({ color: 0xffffff }))
+        planeBottom.rotateX(-Math.PI / 2)
+        this.scene.add(planeBottom)
+    }
 }
