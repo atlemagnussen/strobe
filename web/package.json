@@ -13,7 +13,9 @@
   "scripts": {
     "start": "vite",
     "build": "tsc && vite build",
-    "build:watch": "tsc && vite build --watch"
+    "build:watch": "tsc && vite build --watch",
+    "run": "npm run build && npm run serve",
+    "serve": "serve dist"
   },
   "keywords": [
     "test"
@@ -23,6 +25,7 @@
   "devDependencies": {
     "@types/node": "^20.10.6",
     "@types/three": "^0.160.0",
+    "typescript": "^5.3.3",
     "vite": "^5.0.10"
   },
   "dependencies": {

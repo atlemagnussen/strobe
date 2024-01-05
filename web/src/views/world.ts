@@ -18,22 +18,41 @@ export class StrobeWorld extends LitElement {
             background-color: #F00;
         }
     `
-
+    canvasEl: HTMLCanvasElement | undefined
     threeRenderer : ThreeWorldRenderer | null = null
     //canvasRef: Ref<HTMLCanvasElement>
     constructor() {
         super()
         //this.canvasRef = createRef<HTMLCanvasElement>()
     }
+
+    connectedCallback(): void {
+        super.connectedCallback()
+        window.addEventListener("resize", () => this.resizeCanvas())
+    }
+    disconnectedCallback(): void {
+        super.disconnectedCallback()
+        window.removeEventListener("resize", () => this.resizeCanvas())
+    }
     
     setupCanvas(canvasEl: Element | undefined) {
         if (!canvasEl)
             return
+        this.canvasEl = canvasEl as HTMLCanvasElement
+        this.resizeCanvas()
         this.threeRenderer = new ThreeWorldRenderer(canvasEl as HTMLCanvasElement, this.clientWidth, this.clientHeight)
         const btn = this.threeRenderer.getVRButton()
         this.shadowRoot?.prepend(btn)
     }
     
+    resizeCanvas() {
+        if (this.canvasEl) {
+            this.canvasEl.width = this.clientWidth
+            this.canvasEl.height = this.clientHeight
+        }
+        if (this.threeRenderer)
+            this.threeRenderer.onWindowResize(this.clientWidth, this.clientHeight)
+    }
 
     render() {
         return html`
