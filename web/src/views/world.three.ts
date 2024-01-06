@@ -14,8 +14,8 @@ export class ThreeWorldRenderer {
     aspectRatio = 1
     cube: THREE.Mesh | null = null
 
-
     clock: THREE.Clock
+    
     constructor(canvas: HTMLCanvasElement, width: number, height: number) {
 
         canvas.height = height
@@ -43,11 +43,19 @@ export class ThreeWorldRenderer {
         // this.addRoom()
         // this.addCube()
         this.addLight()
-
         this.clock = new THREE.Clock()
+    }
+
+    async startSession(session: XRSession) {
+        this.start()
+        await this.renderer.xr.setSession(session)
+    }
+
+    start() {
         this.clock.start()
         this.animate()
     }
+
     animate() {
         const renderer = this.renderer
         renderer.xr.enabled = true

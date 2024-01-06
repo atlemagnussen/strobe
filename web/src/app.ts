@@ -5,6 +5,7 @@ import "./vars.css"
 import "./site.css"
 
 import "./views/world"
+import "./components/vrButton"
 
 @customElement('strobe-app')
 export class StrobeApp extends LitElement {

@@ -2,7 +2,8 @@ import { LitElement, css, html } from "lit"
 import { customElement } from "lit/decorators.js"
 import { ref } from "lit/directives/ref.js"
 import { ThreeWorldRenderer } from "./world.three"
-
+import { Subscription } from "rxjs"
+import { isImmersiveVrSupported, startSession, endSession } from "@app/services/webXrService"
 
 @customElement('strobe-world')
 export class StrobeWorld extends LitElement {
@@ -15,20 +16,27 @@ export class StrobeWorld extends LitElement {
             padding: 0;
         }
         canvas {
-            background-color: #F00;
+            background-color: #444;
         }
     `
     canvasEl: HTMLCanvasElement | undefined
     threeRenderer : ThreeWorldRenderer | null = null
-    //canvasRef: Ref<HTMLCanvasElement>
+    
     constructor() {
         super()
-        //this.canvasRef = createRef<HTMLCanvasElement>()
     }
+
+    sub: Subscription | undefined
+    isEnabled = false
+    isSessionStarted = false
 
     connectedCallback(): void {
         super.connectedCallback()
         window.addEventListener("resize", () => this.resizeCanvas())
+        this.sub = isImmersiveVrSupported.subscribe(state => {
+            this.isEnabled = state.enabled
+            this.isSessionStarted = state.sessionStarted!!
+        })
     }
     disconnectedCallback(): void {
         super.disconnectedCallback()
@@ -41,8 +49,6 @@ export class StrobeWorld extends LitElement {
         this.canvasEl = canvasEl as HTMLCanvasElement
         this.resizeCanvas()
         this.threeRenderer = new ThreeWorldRenderer(canvasEl as HTMLCanvasElement, this.clientWidth, this.clientHeight)
-        const btn = this.threeRenderer.getVRButton()
-        this.shadowRoot?.prepend(btn)
     }
     
     resizeCanvas() {
@@ -54,8 +60,22 @@ export class StrobeWorld extends LitElement {
             this.threeRenderer.onWindowResize(this.clientWidth, this.clientHeight)
     }
 
+    async vrButtonClicked() {
+        if (!this.isEnabled)
+            return
+
+        if (this.isSessionStarted)
+            endSession()
+        else {
+            const session = await startSession()
+            if (session)
+                this.threeRenderer?.startSession(session)
+        }
+        
+    }
     render() {
         return html`
+            <vr-button @click=${this.vrButtonClicked}></vr-button>
             <canvas ${ref((cel) => this.setupCanvas(cel))}></canvas>
         `
     }
