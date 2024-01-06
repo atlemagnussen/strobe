@@ -3,6 +3,7 @@ import { VRButton } from "three/addons/webxr/VRButton.js"
 import { XRPlanes } from "three/addons/webxr/XRPlanes.js"
 import * as THREE from "three"
 
+const backgroundColors = [new THREE.Color(0x0096ff), new THREE.Color(0x9600ff)]
 
 export class ThreeWorldRenderer {
     canvasEl: HTMLCanvasElement
@@ -12,6 +13,9 @@ export class ThreeWorldRenderer {
     animFrame = 0
     aspectRatio = 1
     cube: THREE.Mesh | null = null
+
+
+    clock: THREE.Clock
     constructor(canvas: HTMLCanvasElement, width: number, height: number) {
 
         canvas.height = height
@@ -19,8 +23,7 @@ export class ThreeWorldRenderer {
 
         this.aspectRatio = width / height
         this.scene = new THREE.Scene()
-        this.scene.background = new THREE.Color(0x0096ff)
-
+        this.scene.background = backgroundColors[0]
         
         this.camera = new THREE.PerspectiveCamera(45, this.aspectRatio, 1, 5000)
 		this.camera.position.set(0, 75, 160)
@@ -41,12 +44,20 @@ export class ThreeWorldRenderer {
         // this.addCube()
         this.addLight()
 
+        this.clock = new THREE.Clock()
+        this.clock.start()
         this.animate()
     }
     animate() {
         const renderer = this.renderer
         renderer.xr.enabled = true
         renderer.setAnimationLoop(() => {
+            const delta = Math.floor(this.clock.getElapsedTime())
+            let background = backgroundColors[0]
+            if (delta % 2 === 0)
+                background = backgroundColors[1]
+            this.scene.background = background
+
             // if (this.cube) {
             //     this.cube.rotation.x += 0.01
             //     this.cube.rotation.y += 0.01
