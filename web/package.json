@@ -14,8 +14,9 @@
     "start": "vite",
     "build": "tsc && vite build",
     "build:watch": "tsc && vite build --watch",
-    "run": "npm run build && npm run serve",
-    "serve": "serve dist"
+    "run": "npm run build && npm run copy && npm run serve",
+    "serve": "serve dist",
+    "copy": "cp -r node_modules/three public"
   },
   "keywords": [
     "test"

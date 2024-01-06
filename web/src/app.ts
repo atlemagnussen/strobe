@@ -14,7 +14,14 @@ export class StrobeApp extends LitElement {
             height: 100%;
             display: flex;
             flex-direction: column;
-            padding: 1rem;
+            padding: 0;
+            margin: 0;
+        }
+        p {
+            padding: 0 1rem;
+        }
+        a {
+            color: white;
         }
     `
 
@@ -24,7 +31,7 @@ export class StrobeApp extends LitElement {
     
     render() {
         return html`
-            <p>Hello ${this.world}</p>
+            <p><a href="/test.html">Test</a></p>
             <strobe-world></strobe-world>
         `
     }

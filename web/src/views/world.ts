@@ -12,7 +12,7 @@ export class StrobeWorld extends LitElement {
             height: 100%;
             display: flex;
             flex-direction: column;
-            padding: 1rem;
+            padding: 0;
         }
         canvas {
             background-color: #F00;
