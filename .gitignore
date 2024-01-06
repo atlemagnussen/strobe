@@ -2,3 +2,4 @@ node_modules
 dist/
 types/
 web/public/three/
+.DS_Store
