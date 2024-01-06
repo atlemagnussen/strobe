@@ -17,7 +17,9 @@
     "build": "npm run build:vite && npm run copy",
     "run": "npm run build && npm run serve",
     "serve": "serve dist",
-    "copy": "cp -r node_modules/three public"
+    "copy": "cp -r node_modules/three public",
+    "deploy:firebase": "firebase deploy --only hosting:atle-xr",
+    "deploy": "npm run build && npm run deploy:firebase"
   },
   "keywords": [
     "test"

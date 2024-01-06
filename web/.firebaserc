@@ -1,0 +1,15 @@
+{
+  "projects": {
+    "default": "backslash-project"
+  },
+  "targets": {
+    "backslash-project": {
+      "hosting": {
+        "atle-xr": [
+          "atle-xr"
+        ]
+      }
+    }
+  },
+  "etags": {}
+}
