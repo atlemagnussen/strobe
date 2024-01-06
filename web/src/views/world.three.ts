@@ -3,7 +3,7 @@ import { VRButton } from "three/addons/webxr/VRButton.js"
 import { XRPlanes } from "three/addons/webxr/XRPlanes.js"
 import * as THREE from "three"
 
-const backgroundColors = [new THREE.Color(0x0096ff), new THREE.Color(0x9600ff)]
+const backgroundColors = [new THREE.Color(0xaaaaaa), new THREE.Color(0x000000)]
 
 export class ThreeWorldRenderer {
     canvasEl: HTMLCanvasElement
@@ -39,7 +39,7 @@ export class ThreeWorldRenderer {
         this.renderer.setPixelRatio(window.devicePixelRatio)
         this.renderer.setSize(width, height)
 
-        this.addPlanes()
+        // this.addPlanes()
         // this.addRoom()
         // this.addCube()
         this.addLight()
@@ -60,9 +60,13 @@ export class ThreeWorldRenderer {
         const renderer = this.renderer
         renderer.xr.enabled = true
         renderer.setAnimationLoop(() => {
-            const delta = Math.floor(this.clock.getElapsedTime())
+            const delta = this.clock.getElapsedTime().toFixed(1)
+            const deltaNum = parseFloat(delta) * 10
+            const modDot = deltaNum % 2
+            // console.log(`deltaNum=${deltaNum}, mod=${modDot}`)
+
             let background = backgroundColors[0]
-            if (delta % 2 === 0)
+            if (modDot === 0)
                 background = backgroundColors[1]
             this.scene.background = background
 
