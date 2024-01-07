@@ -67,12 +67,14 @@ export class StrobeVr extends LitElement {
         if (!this.isEnabled)
             return
 
-        if (this.isSessionStarted)
+        if (this.isSessionStarted) {
             endSession()
+            this.threeRenderer?.end()
+        }
         else {
             const session = await startSession("immersive-vr")
             if (session)
-                this.threeRenderer?.startSession(session)
+                this.threeRenderer?.start(session)
         }
     }
 

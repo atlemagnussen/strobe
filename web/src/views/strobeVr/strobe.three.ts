@@ -1,7 +1,7 @@
 import { XRPlanes } from "three/addons/webxr/XRPlanes.js"
 import * as THREE from "three"
 
-const backgroundColors = [new THREE.Color(0xaaaaaa), new THREE.Color(0x000000)]
+const backgroundColors = [new THREE.Color(0xffffff), new THREE.Color(0x000000)]
 
 export class ThreeWorldRenderer {
     canvasEl: HTMLCanvasElement
@@ -51,14 +51,13 @@ export class ThreeWorldRenderer {
         this.clock = new THREE.Clock()
     }
 
-    async startSession(session: XRSession) {
-        this.clock.start()
-        this.start()
-        await this.renderer.xr.setSession(session)
+    end() {
+        this.renderer.setAnimationLoop(null)
     }
-
-    start() {
+    async start(session: XRSession) {
+        this.clock.start()
         this.animate()
+        await this.renderer.xr.setSession(session)
     }
 
     light = false
