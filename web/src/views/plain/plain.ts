@@ -1,7 +1,7 @@
 import { LitElement, css, html } from "lit"
 import { customElement } from "lit/decorators.js"
 import { ref } from "lit/directives/ref.js"
-import { ThreeWorldRenderer } from "./world.three"
+import { PlainRenderer } from "./plain.three"
 import { Subscription } from "rxjs"
 import { isImmersiveVrSupported, startSession, endSession } from "@app/services/webXrService"
 
@@ -20,7 +20,7 @@ export class StrobeWorld extends LitElement {
         }
     `
     canvasEl: HTMLCanvasElement | undefined
-    threeRenderer : ThreeWorldRenderer | null = null
+    threeRenderer : PlainRenderer | null = null
     
     constructor() {
         super()
@@ -48,7 +48,7 @@ export class StrobeWorld extends LitElement {
             return
         this.canvasEl = canvasEl as HTMLCanvasElement
         this.resizeCanvas()
-        this.threeRenderer = new ThreeWorldRenderer(canvasEl as HTMLCanvasElement, this.clientWidth, this.clientHeight)
+        this.threeRenderer = new PlainRenderer(canvasEl as HTMLCanvasElement, this.clientWidth, this.clientHeight)
     }
     
     resizeCanvas() {
@@ -67,7 +67,7 @@ export class StrobeWorld extends LitElement {
         if (this.isSessionStarted)
             endSession()
         else {
-            const session = await startSession()
+            const session = await startSession("immersive-ar")
             if (session)
                 this.threeRenderer?.startSession(session)
         }

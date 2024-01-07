@@ -58,10 +58,10 @@ function onSessionEnded( /*event*/ ) {
     setSessionStartedState(false)
     currentSession = null;
 }
-const sessionInit = { optionalFeatures: [ 'local-floor', 'bounded-floor', 'hand-tracking', 'layers' ] }
+const sessionInit: XRSessionInit = { optionalFeatures: [ 'local-floor', 'bounded-floor', 'hand-tracking', 'layers' ] }
 
-export async function startSession() {
-    const session = await navigator.xr?.requestSession('immersive-vr', sessionInit)
+export async function startSession(mode: XRSessionMode) {
+    const session = await navigator.xr?.requestSession(mode, sessionInit)
     session?.addEventListener('end', onSessionEnded )
 
     currentSession = session

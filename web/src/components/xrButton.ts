@@ -1,10 +1,10 @@
 import { LitElement, css, html } from "lit"
-import { customElement, state } from "lit/decorators.js"
+import { customElement, property, state } from "lit/decorators.js"
 import { isImmersiveVrSupported } from "@app/services/webXrService"
 import { Subscription } from "rxjs"
 
-@customElement('vr-button')
-export class VrButton extends LitElement {
+@customElement('xr-button')
+export class XrButton extends LitElement {
     static styles = css`
         :host {
             display: inline-flex;
@@ -48,6 +48,9 @@ export class VrButton extends LitElement {
     @state()
     httpsLink = ""
 
+    @property({attribute:true})
+    label = "VR"
+
     sub: Subscription | undefined
 
     connectedCallback(): void {
@@ -83,9 +86,9 @@ export class VrButton extends LitElement {
             `
         }
         return this.isSessionStarted ? html`
-            <!-- <button id="VRButton">EXIT VR</button> -->
+            <!-- <button>EXIT VR</button> -->
         ` : html`
-            <button id="VRButton">ENTER VR</button>
+            <button>ENTER ${this.label}</button>
         `
     }
 }

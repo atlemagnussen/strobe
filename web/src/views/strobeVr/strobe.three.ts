@@ -1,5 +1,3 @@
-
-import { VRButton } from "three/addons/webxr/VRButton.js"
 import { XRPlanes } from "three/addons/webxr/XRPlanes.js"
 import * as THREE from "three"
 
@@ -99,9 +97,6 @@ export class ThreeWorldRenderer {
 
         this.renderer.setSize(width, height)
 
-    }
-    getVRButton() {
-        return VRButton.createButton(this.renderer)
     }
     addLight() {
         const light = new THREE.HemisphereLight(0xffffff, 0xbbbbff, 3)

@@ -1,11 +1,11 @@
 import { LitElement, css, html } from "lit"
-import { customElement, state } from "lit/decorators.js"
+import { customElement } from "lit/decorators.js"
 
 import "./vars.css"
 import "./site.css"
 
-import "./views/world"
-import "./components/vrButton"
+import "./views/strobeVr/strobe"
+import "./components/xrButton"
 
 @customElement('strobe-app')
 export class StrobeApp extends LitElement {
@@ -26,14 +26,10 @@ export class StrobeApp extends LitElement {
         }
     `
 
-    @state()
-    world = "world"
-
-    
     render() {
         return html`
             <p><a href="/test.html">Test</a></p>
-            <strobe-world></strobe-world>
+            <strobe-vr></strobe-vr>
         `
     }
 }
