@@ -1,6 +1,6 @@
 import { LitElement, css, html } from "lit"
 import { customElement, state } from "lit/decorators.js"
-import { ref } from "lit/directives/ref.js"
+import { createRef, ref } from "lit/directives/ref.js"
 import { StrobeThree } from "./strobe.three"
 import { Subscription } from "rxjs"
 import { isImmersiveVrSupported, startSession, endSession } from "@app/services/webXrService"
@@ -19,7 +19,7 @@ export class StrobeVr extends LitElement {
             background-color: #444;
         }
     `
-    canvasEl: HTMLCanvasElement | undefined
+    canvasRef = createRef<HTMLCanvasElement>()
     threeRenderer : StrobeThree | null = null
     
     constructor() {
@@ -42,8 +42,8 @@ export class StrobeVr extends LitElement {
             if (this.isSessionStarted && !sessionStarted) {
                 // session ended
                 this.threeRenderer?.endAnimation()
-                if (this.canvasEl)
-                    this.threeRenderer = new StrobeThree(this.canvasEl, this.clientWidth, this.clientHeight, this.selectedHz)
+                if (this.canvasRef.value)
+                    this.threeRenderer = new StrobeThree(this.canvasRef.value, this.clientWidth, this.clientHeight, this.selectedHz)
             }
 
             this.isEnabled = state.enabled
@@ -55,18 +55,19 @@ export class StrobeVr extends LitElement {
         window.removeEventListener("resize", () => this.resizeCanvas())
     }
     
-    setupCanvas(canvasEl: Element | undefined) {
-        if (!canvasEl)
+    setupCanvasAndThree() {
+        if (!this.canvasRef.value)
             return
-        this.canvasEl = canvasEl as HTMLCanvasElement
+        
         this.resizeCanvas()
-        this.threeRenderer = new StrobeThree(canvasEl as HTMLCanvasElement, this.clientWidth, this.clientHeight, this.selectedHz)
+        this.threeRenderer = new StrobeThree(this.canvasRef.value, this.clientWidth, this.clientHeight, this.selectedHz)
     }
     
     resizeCanvas() {
-        if (this.canvasEl) {
-            this.canvasEl.width = this.clientWidth
-            this.canvasEl.height = this.clientHeight
+        if (this.canvasRef.value) {
+            const canvasEl = this.canvasRef.value
+            canvasEl.width = this.clientWidth
+            canvasEl.height = this.clientHeight
         }
         if (this.threeRenderer)
             this.threeRenderer.onWindowResize(this.clientWidth, this.clientHeight)
@@ -92,20 +93,31 @@ export class StrobeVr extends LitElement {
         const target = e.target as HTMLInputElement
         if (target.value) {
             this.selectedHz = parseFloat(target.value)
-            console.log(this.selectedHz)
+            this.threeRenderer?.setFlickerHz(this.selectedHz)
         }
     }
 
+    firstUpdated() {
+        this.setupCanvasAndThree()
+    }
     render() {
         return html`
             <div>
+                <input type="radio" id="six" value="6" .checked=${this.selectedHz == 6} @change=${this.radioChanged}>
+                <label for="six">6Hz</label>
                 <input type="radio" id="schuman" value="7.83" .checked=${this.selectedHz == 7.83} @change=${this.radioChanged}>
                 <label for="schuman">7.83Hz</label>
                 <input type="radio" id="ten" value="10" .checked=${this.selectedHz == 10} @change=${this.radioChanged}>
                 <label for="ten">10Hz</label>
+                <input type="radio" id="twenty" value="20" .checked=${this.selectedHz == 20} @change=${this.radioChanged}>
+                <label for="twenty">20Hz</label>
+                <input type="radio" id="thirty" value="30" .checked=${this.selectedHz == 30} @change=${this.radioChanged}>
+                <label for="thirty">30Hz</label>
+                <input type="radio" id="forty" value="40" .checked=${this.selectedHz == 40} @change=${this.radioChanged}>
+                <label for="forty">40Hz</label>
             </div>
             <xr-button @click=${this.vrButtonClicked}></xr-button>
-            <canvas ${ref((cel) => this.setupCanvas(cel))}></canvas>
+            <canvas ${ref(this.canvasRef)}></canvas>
         `
     }
 }

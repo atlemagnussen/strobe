@@ -21,8 +21,7 @@ export class StrobeThree {
         canvas.height = height
         canvas.width = width
 
-        this.flickerHz = flickerHz
-        this.flipTime = 1 / (this.flickerHz * 2)
+        this.setFlickerHz(flickerHz)
 
         this.aspectRatio = width / height
         this.scene = new THREE.Scene()
@@ -56,8 +55,12 @@ export class StrobeThree {
         await this.renderer.xr.setSession(session)
     }
 
-    light = false
+    setFlickerHz(flickerHz: number) {
+        this.flickerHz = flickerHz
+        this.flipTime = 1 / (this.flickerHz * 2)
+    }
 
+    light = false
     lastFlipTime = 0
     animate() {
         const renderer = this.renderer
