@@ -16,10 +16,16 @@ export class ThreeWorldRenderer {
 
     clock: THREE.Clock
     
+    flickerHz = 7.83
+    flipTime = 1
+
     constructor(canvas: HTMLCanvasElement, width: number, height: number) {
 
         canvas.height = height
         canvas.width = width
+
+        this.flipTime = 1 / (this.flickerHz * 2)
+        console.log("flipTime", this.flipTime)
 
         this.aspectRatio = width / height
         this.scene = new THREE.Scene()
@@ -47,27 +53,36 @@ export class ThreeWorldRenderer {
     }
 
     async startSession(session: XRSession) {
+        this.clock.start()
         this.start()
         await this.renderer.xr.setSession(session)
     }
 
     start() {
-        this.clock.start()
         this.animate()
     }
 
+    light = false
+
+    lastFlipTime = 0
     animate() {
         const renderer = this.renderer
         renderer.xr.enabled = true
         renderer.setAnimationLoop(() => {
-            const delta = this.clock.getElapsedTime().toFixed(1)
-            const deltaNum = parseFloat(delta) * 10
-            const modDot = deltaNum % 2
-            // console.log(`deltaNum=${deltaNum}, mod=${modDot}`)
+            const elapsed  = this.clock.getElapsedTime()
 
-            let background = backgroundColors[0]
-            if (modDot === 0)
-                background = backgroundColors[1]
+            const delta = elapsed - this.lastFlipTime
+
+            if (this.flipTime < delta) {
+                this.lastFlipTime = elapsed
+                this.light = !this.light
+                // console.log(`Flipped, time = ${delta}, flipTime=${this.flipTime}`)
+            }
+
+            let background = backgroundColors[1] // dark
+            if (this.light)
+                background = backgroundColors[0]
+                
             this.scene.background = background
 
             // if (this.cube) {
