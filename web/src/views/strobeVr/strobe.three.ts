@@ -51,7 +51,7 @@ export class ThreeWorldRenderer {
         this.clock = new THREE.Clock()
     }
 
-    end() {
+    endAnimation() {
         this.renderer.setAnimationLoop(null)
     }
     async start(session: XRSession) {

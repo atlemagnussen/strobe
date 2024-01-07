@@ -37,8 +37,15 @@ export class StrobeVr extends LitElement {
         super.connectedCallback()
         window.addEventListener("resize", () => this.resizeCanvas())
         this.sub = isImmersiveVrSupported.subscribe(state => {
+            const sessionStarted = state.sessionStarted!!
+
+            if (this.isSessionStarted && !sessionStarted) {
+                // session ended
+                this.threeRenderer?.endAnimation()
+            }
+
             this.isEnabled = state.enabled
-            this.isSessionStarted = state.sessionStarted!!
+            this.isSessionStarted = sessionStarted
         })
     }
     disconnectedCallback(): void {
@@ -69,7 +76,9 @@ export class StrobeVr extends LitElement {
 
         if (this.isSessionStarted) {
             endSession()
-            this.threeRenderer?.end()
+            this.threeRenderer?.endAnimation()
+            // if (this.canvasEl)
+            //     this.threeRenderer = new ThreeWorldRenderer(this.canvasEl, this.clientWidth, this.clientHeight, this.selectedHz)
         }
         else {
             const session = await startSession("immersive-vr")
