@@ -28,7 +28,7 @@ export class StrobeApp extends LitElement {
 
     render() {
         return html`
-            <p><a href="/test.html">Test</a></p>
+            <p>Dreamachine stroboscopic flickering</p>
             <strobe-vr></strobe-vr>
         `
     }
