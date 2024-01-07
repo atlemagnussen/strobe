@@ -1,5 +1,5 @@
 import { LitElement, css, html } from "lit"
-import { customElement } from "lit/decorators.js"
+import { customElement, state } from "lit/decorators.js"
 import { ref } from "lit/directives/ref.js"
 import { ThreeWorldRenderer } from "./strobe.three"
 import { Subscription } from "rxjs"
@@ -30,6 +30,9 @@ export class StrobeVr extends LitElement {
     isEnabled = false
     isSessionStarted = false
 
+    @state()
+    selectedHz = 7.83
+    
     connectedCallback(): void {
         super.connectedCallback()
         window.addEventListener("resize", () => this.resizeCanvas())
@@ -48,7 +51,7 @@ export class StrobeVr extends LitElement {
             return
         this.canvasEl = canvasEl as HTMLCanvasElement
         this.resizeCanvas()
-        this.threeRenderer = new ThreeWorldRenderer(canvasEl as HTMLCanvasElement, this.clientWidth, this.clientHeight)
+        this.threeRenderer = new ThreeWorldRenderer(canvasEl as HTMLCanvasElement, this.clientWidth, this.clientHeight, this.selectedHz)
     }
     
     resizeCanvas() {
@@ -72,8 +75,24 @@ export class StrobeVr extends LitElement {
                 this.threeRenderer?.startSession(session)
         }
     }
+
+    radioChanged(e: any) {
+        
+        const target = e.target as HTMLInputElement
+        if (target.value) {
+            this.selectedHz = parseFloat(target.value)
+            console.log(this.selectedHz)
+        }
+    }
+
     render() {
         return html`
+            <div>
+                <input type="radio" id="schuman" value="7.83" .checked=${this.selectedHz == 7.83} @change=${this.radioChanged}>
+                <label for="schuman">7.83Hz</label>
+                <input type="radio" id="ten" value="10" .checked=${this.selectedHz == 10} @change=${this.radioChanged}>
+                <label for="ten">10Hz</label>
+            </div>
             <xr-button @click=${this.vrButtonClicked}></xr-button>
             <canvas ${ref((cel) => this.setupCanvas(cel))}></canvas>
         `

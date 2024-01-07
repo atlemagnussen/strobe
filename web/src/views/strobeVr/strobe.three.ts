@@ -17,11 +17,12 @@ export class ThreeWorldRenderer {
     flickerHz = 7.83
     flipTime = 1
 
-    constructor(canvas: HTMLCanvasElement, width: number, height: number) {
+    constructor(canvas: HTMLCanvasElement, width: number, height: number, flickerHz: number) {
 
         canvas.height = height
         canvas.width = width
 
+        this.flickerHz = flickerHz
         this.flipTime = 1 / (this.flickerHz * 2)
         console.log("flipTime", this.flipTime)
 
