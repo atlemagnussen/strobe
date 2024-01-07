@@ -1,6 +1,7 @@
 import * as THREE from "three"
 
-const backgroundColors = [new THREE.Color(0xffffff), new THREE.Color(0x000000)]
+let blackColor = new THREE.Color(0x000000)
+let greyWhiteColor = new THREE.Color("#AAA")
 
 export class StrobeThree {
     canvasEl: HTMLCanvasElement
@@ -16,6 +17,8 @@ export class StrobeThree {
     flickerHz = 7.83
     flipTime = 1
 
+    lightColor = greyWhiteColor
+
     constructor(canvas: HTMLCanvasElement, width: number, height: number, flickerHz: number) {
 
         canvas.height = height
@@ -25,7 +28,7 @@ export class StrobeThree {
 
         this.aspectRatio = width / height
         this.scene = new THREE.Scene()
-        this.scene.background = backgroundColors[0]
+        this.scene.background = blackColor
         
         this.camera = new THREE.PerspectiveCamera(45, this.aspectRatio, 1, 5000)
 		this.camera.position.set(0, 75, 160)
@@ -60,6 +63,9 @@ export class StrobeThree {
         this.flipTime = 1 / (this.flickerHz * 2)
     }
 
+    setLightColor(color: string) {
+        this.lightColor = new THREE.Color(color)
+    }
     light = false
     lastFlipTime = 0
     animate() {
@@ -76,9 +82,9 @@ export class StrobeThree {
                 // console.log(`Flipped, time = ${delta}, flipTime=${this.flipTime}`)
             }
 
-            let background = backgroundColors[1] // dark
+            let background = blackColor
             if (this.light)
-                background = backgroundColors[0]
+                background = this.lightColor
                 
             this.scene.background = background
 

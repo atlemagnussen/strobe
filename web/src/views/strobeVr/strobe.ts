@@ -88,33 +88,35 @@ export class StrobeVr extends LitElement {
         }
     }
 
-    radioChanged(e: any) {
-        
+    freqChanged(e: any) {
         const target = e.target as HTMLInputElement
         if (target.value) {
             this.selectedHz = parseFloat(target.value)
             this.threeRenderer?.setFlickerHz(this.selectedHz)
         }
     }
-
+    colorChanged(e: any) {
+        const target = e.target as HTMLInputElement
+        if (target.value) {
+            this.threeRenderer?.setLightColor(target.value)
+        }
+    }
     firstUpdated() {
         this.setupCanvasAndThree()
     }
+
+    frequencies = [6, 7.83, 10, 20, 30, 40]
     render() {
         return html`
             <div>
-                <input type="radio" id="six" value="6" .checked=${this.selectedHz == 6} @change=${this.radioChanged}>
-                <label for="six">6Hz</label>
-                <input type="radio" id="schuman" value="7.83" .checked=${this.selectedHz == 7.83} @change=${this.radioChanged}>
-                <label for="schuman">7.83Hz</label>
-                <input type="radio" id="ten" value="10" .checked=${this.selectedHz == 10} @change=${this.radioChanged}>
-                <label for="ten">10Hz</label>
-                <input type="radio" id="twenty" value="20" .checked=${this.selectedHz == 20} @change=${this.radioChanged}>
-                <label for="twenty">20Hz</label>
-                <input type="radio" id="thirty" value="30" .checked=${this.selectedHz == 30} @change=${this.radioChanged}>
-                <label for="thirty">30Hz</label>
-                <input type="radio" id="forty" value="40" .checked=${this.selectedHz == 40} @change=${this.radioChanged}>
-                <label for="forty">40Hz</label>
+                <label for="req">Flicker</label>
+                <select id="req" @change=${this.freqChanged}>
+                    ${this.frequencies.map(f => {
+                        return html`<option value="${f}">${f}Hz</option>`
+                    })}
+                </select>
+                <label for="color">Light color</label>
+                <input id="color" type="color" value="#aaaaaa" @input=${this.colorChanged}>
             </div>
             <xr-button @click=${this.vrButtonClicked}></xr-button>
             <canvas ${ref(this.canvasRef)}></canvas>
