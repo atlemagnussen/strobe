@@ -1,4 +1,3 @@
-import { XRPlanes } from "three/addons/webxr/XRPlanes.js"
 import * as THREE from "three"
 
 const backgroundColors = [new THREE.Color(0xffffff), new THREE.Color(0x000000)]
@@ -24,7 +23,6 @@ export class ThreeWorldRenderer {
 
         this.flickerHz = flickerHz
         this.flipTime = 1 / (this.flickerHz * 2)
-        console.log("flipTime", this.flipTime)
 
         this.aspectRatio = width / height
         this.scene = new THREE.Scene()
@@ -32,8 +30,6 @@ export class ThreeWorldRenderer {
         
         this.camera = new THREE.PerspectiveCamera(45, this.aspectRatio, 1, 5000)
 		this.camera.position.set(0, 75, 160)
-        //this.camera.position.z = 15
-        //this.camera = new THREE.PerspectiveCamera(75, aspectRatio, 0.1, 1000)
 
         this.canvasEl = canvas
         this.renderer = new THREE.WebGLRenderer({
@@ -44,10 +40,7 @@ export class ThreeWorldRenderer {
         this.renderer.setPixelRatio(window.devicePixelRatio)
         this.renderer.setSize(width, height)
 
-        // this.addPlanes()
-        // this.addRoom()
-        // this.addCube()
-        this.addLight()
+        // this.addLight()
         this.clock = new THREE.Clock()
     }
 
@@ -83,10 +76,6 @@ export class ThreeWorldRenderer {
                 
             this.scene.background = background
 
-            // if (this.cube) {
-            //     this.cube.rotation.x += 0.01
-            //     this.cube.rotation.y += 0.01
-            // }
             renderer.render(this.scene, this.camera)
         })
     }
@@ -96,7 +85,6 @@ export class ThreeWorldRenderer {
         this.camera.updateProjectionMatrix()
 
         this.renderer.setSize(width, height)
-
     }
     addLight() {
         const light = new THREE.HemisphereLight(0xffffff, 0xbbbbff, 3)
@@ -108,24 +96,5 @@ export class ThreeWorldRenderer {
         sunLight.position.set(5, 7, - 1)
 		sunLight.lookAt(this.scene.position)
 		this.scene.add(sunLight)
-    }
-    addCube() {
-        const geometry = new THREE.BoxGeometry(1, 1, 1)
-        const material = new THREE.MeshBasicMaterial({ color: 0x0000ff })
-        this.cube = new THREE.Mesh( geometry, material)
-        this.scene.add(this.cube)
-
-        this.camera.position.z = 10
-    }
-
-    addPlanes() {
-        const planes = new XRPlanes(this.renderer)
-		this.scene.add(planes as THREE.Object3D<THREE.Object3DEventMap>)
-    }
-    addRoom() {
-        const planeGeo = new THREE.PlaneGeometry(100.1, 100.1)
-        const planeBottom = new THREE.Mesh( planeGeo, new THREE.MeshPhongMaterial({ color: 0xffffff }))
-        planeBottom.rotateX(-Math.PI / 2)
-        this.scene.add(planeBottom)
     }
 }
