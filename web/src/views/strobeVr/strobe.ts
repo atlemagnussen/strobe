@@ -1,7 +1,7 @@
 import { LitElement, css, html } from "lit"
 import { customElement, state } from "lit/decorators.js"
 import { ref } from "lit/directives/ref.js"
-import { ThreeWorldRenderer } from "./strobe.three"
+import { StrobeThree } from "./strobe.three"
 import { Subscription } from "rxjs"
 import { isImmersiveVrSupported, startSession, endSession } from "@app/services/webXrService"
 
@@ -20,7 +20,7 @@ export class StrobeVr extends LitElement {
         }
     `
     canvasEl: HTMLCanvasElement | undefined
-    threeRenderer : ThreeWorldRenderer | null = null
+    threeRenderer : StrobeThree | null = null
     
     constructor() {
         super()
@@ -42,6 +42,8 @@ export class StrobeVr extends LitElement {
             if (this.isSessionStarted && !sessionStarted) {
                 // session ended
                 this.threeRenderer?.endAnimation()
+                if (this.canvasEl)
+                    this.threeRenderer = new StrobeThree(this.canvasEl, this.clientWidth, this.clientHeight, this.selectedHz)
             }
 
             this.isEnabled = state.enabled
@@ -58,7 +60,7 @@ export class StrobeVr extends LitElement {
             return
         this.canvasEl = canvasEl as HTMLCanvasElement
         this.resizeCanvas()
-        this.threeRenderer = new ThreeWorldRenderer(canvasEl as HTMLCanvasElement, this.clientWidth, this.clientHeight, this.selectedHz)
+        this.threeRenderer = new StrobeThree(canvasEl as HTMLCanvasElement, this.clientWidth, this.clientHeight, this.selectedHz)
     }
     
     resizeCanvas() {
@@ -77,8 +79,6 @@ export class StrobeVr extends LitElement {
         if (this.isSessionStarted) {
             endSession()
             this.threeRenderer?.endAnimation()
-            // if (this.canvasEl)
-            //     this.threeRenderer = new ThreeWorldRenderer(this.canvasEl, this.clientWidth, this.clientHeight, this.selectedHz)
         }
         else {
             const session = await startSession("immersive-vr")

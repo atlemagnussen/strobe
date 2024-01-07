@@ -2,7 +2,7 @@ import * as THREE from "three"
 
 const backgroundColors = [new THREE.Color(0xffffff), new THREE.Color(0x000000)]
 
-export class ThreeWorldRenderer {
+export class StrobeThree {
     canvasEl: HTMLCanvasElement
     renderer: THREE.WebGLRenderer
     scene: THREE.Scene
@@ -42,10 +42,13 @@ export class ThreeWorldRenderer {
 
         // this.addLight()
         this.clock = new THREE.Clock()
+
+        console.log(`StrobeThree init: width=${width}, height=${height}, flickerHz=${flickerHz}`)
     }
 
     endAnimation() {
         this.renderer.setAnimationLoop(null)
+        this.clock.stop()
     }
     async start(session: XRSession) {
         this.clock.start()
