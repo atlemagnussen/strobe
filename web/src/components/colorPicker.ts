@@ -6,7 +6,8 @@ export class ColorPickerCustomElement extends HTMLElement {
         super()
         this.attachShadow({mode: 'open'})
     }
-
+    myPicker: ColorPicker | null = null
+    inputEl: HTMLInputElement | null = null
     connectedCallback() {
         if (!this.shadowRoot)
             return
@@ -33,7 +34,25 @@ export class ColorPickerCustomElement extends HTMLElement {
         inputEl.classList.add("color-preview")
         inputEl.value = "#069"
 
-        const myPicker = new ColorPicker(inputEl)
+        this.myPicker = new ColorPicker(inputEl)
+
+        inputEl.addEventListener("colorpicker.change", () => this.setValue())
+        this.inputEl = inputEl
+    }
+
+    get value() {
+        if (!this.inputEl)
+            return ""
+        return this.inputEl.value
+    }
+    setValue() {
+        console.log(this.inputEl?.value)
+        this.dispatchEvent(new Event("change"))
+    }
+
+    disconnectedCallback() {
+        if (this.inputEl)
+            this.inputEl.removeEventListener("input", this.setValue)
     }
 }
 

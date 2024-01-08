@@ -121,8 +121,7 @@ export class StrobeVr extends LitElement {
                     })}
                 </select>
                 <label for="color">Light color</label>
-                <color-picker>
-                </color-picker>
+                <color-picker @change=${this.colorChanged}></color-picker>
             </div>
             <xr-button @click=${this.vrButtonClicked}></xr-button>
             <canvas ${ref(this.canvasRef)}></canvas>
