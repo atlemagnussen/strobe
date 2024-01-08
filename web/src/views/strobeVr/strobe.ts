@@ -5,6 +5,8 @@ import { StrobeThree } from "./strobe.three"
 import { Subscription } from "rxjs"
 import { isImmersiveVrSupported, startSession, endSession } from "@app/services/webXrService"
 
+import ColorPicker from "@thednp/color-picker"
+
 @customElement('strobe-vr')
 export class StrobeVr extends LitElement {
     static styles = css`
