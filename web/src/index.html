@@ -10,6 +10,17 @@
     <script type="module" src="./app.ts"></script>
 </head>
 <body>
-    <strobe-app></strobe-app>
+    <div id="app">
+        <header>
+            <navigation-bar active="home" breakpoint="576">
+                <a slot="brand" href="#">Strobe</a>
+                <a href="#">Home</a>
+                <a href="about">About</a>
+            </navigation-bar>
+        </header>
+        <main>
+            <router-slot></router-slot>
+        </main>
+    </div>
 </body>
 </html>

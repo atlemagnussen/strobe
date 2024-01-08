@@ -33,6 +33,7 @@ export class XrButton extends LitElement {
         a {
             left: calc(50% - 90px);
             width: 180px;
+            color: white;
         }
     `
 
@@ -60,20 +61,13 @@ export class XrButton extends LitElement {
             this.message = state.message
             this.isSessionStarted = state.sessionStarted!!
         })
-        // this.addEventListener("click", (e) => this.buttonEventListener(e))
     }
     disconnectedCallback(): void {
         super.disconnectedCallback()
         if (this.sub)
             this.sub.unsubscribe()
     }
-    // buttonEventListener(e: MouseEvent) {
-    //     console.log(e)
-    //     if (!this.isImmersiveVrEnabled) {
-    //         e.preventDefault()
-    //         e.stopPropagation()
-    //     }
-    // }
+    
     
     render() {
 

@@ -5,7 +5,7 @@ import { StrobeThree } from "./strobe.three"
 import { Subscription } from "rxjs"
 import { isImmersiveVrSupported, startSession, endSession } from "@app/services/webXrService"
 
-import ColorPicker from "@thednp/color-picker"
+import "@thednp/color-picker"
 
 @customElement('strobe-vr')
 export class StrobeVr extends LitElement {
@@ -19,6 +19,9 @@ export class StrobeVr extends LitElement {
         }
         canvas {
             background-color: #444;
+        }
+        div.menu {
+            padding: 0 0.5rem;
         }
     `
     canvasRef = createRef<HTMLCanvasElement>()
@@ -110,7 +113,7 @@ export class StrobeVr extends LitElement {
     frequencies = [6, 7.83, 10, 20, 30, 40]
     render() {
         return html`
-            <div>
+            <div class="menu">
                 <label for="req">Flicker</label>
                 <select id="req" @change=${this.freqChanged}>
                     ${this.frequencies.map(f => {
@@ -118,7 +121,8 @@ export class StrobeVr extends LitElement {
                     })}
                 </select>
                 <label for="color">Light color</label>
-                <input id="color" type="color" value="#aaaaaa" @input=${this.colorChanged}>
+                <color-picker>
+                </color-picker>
             </div>
             <xr-button @click=${this.vrButtonClicked}></xr-button>
             <canvas ${ref(this.canvasRef)}></canvas>
