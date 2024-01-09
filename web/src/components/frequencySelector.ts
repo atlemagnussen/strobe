@@ -63,7 +63,7 @@ export class FreqSelector extends LitElement {
     }
     render() {
         return html`
-            <input type="number" value="${this.selectedHz}">
+            <input type="number" value="${this.selectedHz}" @input=${this.freqChanged}>
             <select id="req" @change=${this.freqChanged}>
                 ${this.frequencies.map(f => {
                     return html`<option value="${f}" .selected=${this.selectedHz == f}>${f}Hz</option>`

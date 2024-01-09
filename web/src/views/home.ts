@@ -29,7 +29,7 @@ export class HomeView extends LitElement {
                     <h2>Welcome</h2>
 
                     <p>
-                        <a href="xr">Try the Virtual Reality version for glasses</a>
+                        <a href="xr">Try the VR version for headsets</a>
                     </p>
 
                     <p>
