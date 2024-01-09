@@ -82,8 +82,6 @@ export class Navbar extends LitElement {
 
     connectedCallback() {
         super.connectedCallback()
-        
-        window.addEventListener('resize', () => { this.checkIfMobile() })
     }
 
     firstUpdated() {
@@ -133,33 +131,18 @@ export class Navbar extends LitElement {
         return nav.offsetHeight
     }
 
-    isMobile = false
+    isMobile = false // not really sure why I needed this
     checkIfMobile() {
         this.isMobile = window.innerWidth < this.breakpoint
-
-        // if (isMobile) {
-        //     nav.style.transform = `translateY(-${this.distance}px)`
-        //     setTimeout(() => {
-        //         nav.classList.add('animate')
-        //     }, 1)
-        // } else {
-        //     nav.classList.remove('animate')
-        // }
     }
 
     render() {
         const styles = css`
-            @media screen and (max-width: 640px) {
+            @media screen and (max-width: ${this.breakpoint}px) {
                 header div nav-button {
                     display: block;
                 }
-                /* header {
-                    box-shadow: var(--navbar-shadow);
-                    overflow: hidden;
-                }
-                header div {
-                    border-bottom: none;
-                } */
+                
                 header nav {
                     align-items: center;
                     flex-direction: column;
@@ -169,17 +152,18 @@ export class Navbar extends LitElement {
                     top: -100px;
                     right: 0;
                     z-index: 100;
-                    width: 200px;
+                    width: 150px;
                     background: var(--primary-background);
                     border-radius: 4px;
                 }
 
+                header nav ::slotted(a) {
+                    padding: 1rem 0;
+                }
                 header nav.show {
                     top: 0;
+                    padding: 0.3rem;
                 }
-                /* header nav a {
-                    padding: 0 1rem;
-                } */
             }
         `
 
