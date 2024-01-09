@@ -1,9 +1,18 @@
-const html = String.raw
-const navbar = document.createElement('template')
-navbar.innerHTML = html`
-    <style>
+import { LitElement, css, html, unsafeCSS } from "lit"
+import { customElement, property } from "lit/decorators.js"
+import { createRef, ref } from "lit/directives/ref.js"
+
+import "./navBarBtn"
+
+@customElement('navigation-bar')
+export class Navbar extends LitElement {
+    static styles = css`
+        :host {
+            display: block;
+        }
         header {
             display: flex;
+            flex-direction: row;
             min-height: 48px;
             max-height: 100px;
             justify-content: space-between;
@@ -24,19 +33,17 @@ navbar.innerHTML = html`
             border-bottom: 1px solid rgba(51, 51, 51, 0.1);
             box-shadow: var(--navbar-shadow);
             display: flex;
-            flex-direction: column;
+            flex-direction: row;
             padding: 1rem 0;
-            position: absolute;
             width: 100%;
         }
         ::slotted(a) {
             color: var(--navbar-link-color);
             padding: 0.5rem 0 0.5rem 1rem;
             text-decoration: none;
-            -webkit-tap-highlight-color: rgba(0, 0, 0, 0) !important;
         }
         ::slotted(a:hover) {
-            color: var(--navbar-link-hover-color) !important;
+            color: var(--navbar-link-hover-color);
         }
         .logo::slotted(a) {
             color: #333333;
@@ -47,69 +54,53 @@ navbar.innerHTML = html`
             text-decoration: none;
         }
         .animate {
-            transition: all 1s ease-in-out !important;
+            transition: all 1s ease-in-out;
         }
         ::slotted(.nav-link--active) {
-            color: var(--navbar-link-active-color) !important;
+            color: var(--navbar-link-active-color);
         }
-    </style>
-    <header>
-        <div>
-            <slot name="brand" class="logo"></slot>
-        </div>
-        <nav>
-            <slot></slot>
-        </nav>
-    </header>
-`
+    `
 
-class Navbar extends HTMLElement {
-    constructor() {
-        super()
-        this.attachShadow({ mode: 'open' })
-        this.shadowRoot!.appendChild(navbar.content.cloneNode(true))
+    @property({attribute: true, type: Number})
+    breakpoint = 576
+
+    @property({attribute: true})
+    active = ""
+
+    headerRef = createRef<HTMLDivElement>()
+    navRef = createRef<HTMLDivElement>()
+
+    distance = 0
+    connectedCallback() {
+        super.connectedCallback()
+        
+        window.addEventListener('resize', () => { this.checkIfMobile() })
     }
 
-    connectedCallback() {
-        const bp = this.getAttribute('breakpoint')
-        const props = {
-            active: this.getAttribute('active') as string,
-            breakpoint: parseInt(bp!)
-        }
-
-        if (!this.shadowRoot)
+    firstUpdated() {
+        const links = document.querySelectorAll('navigation-bar a') as NodeListOf<HTMLAnchorElement>
+        
+        if (!this.navRef.value)
             return
 
-        const btn = new NavbarBtn(props.breakpoint)
-        const headerDiv = this.shadowRoot.querySelector('header div')
-        if (headerDiv)
-            headerDiv.append(btn)
+        const nav = this.navRef.value
+        this.distance = nav.offsetHeight - 32
 
+        this.checkIfMobile()
 
-        const data = {
-            header: this.shadowRoot.querySelector('header') as HTMLDivElement,
-            button: this.shadowRoot.querySelector('header navbar-btn') as HTMLButtonElement,
-            nav: this.shadowRoot.querySelector('header nav') as HTMLDivElement,
-            links: document.querySelectorAll('navigation-bar a') as NodeListOf<HTMLAnchorElement>,
-        }
+        if (!this.headerRef.value)
+            return
 
-        const dist = data.nav.offsetHeight - 32
+        const header = this.headerRef.value
+        this.createStyle(header.offsetHeight)
 
-        this.checkIfMobile(data.nav, props.breakpoint, dist)
-
-        this.createStyle(data.header.offsetHeight)
-        this.breakpointStyles(props.breakpoint)
-
-        this.setActiveLink(data.links, props.active)
-        data.button.addEventListener('click', () => {
-            data.nav.classList.toggle('show')
-        })
-        window.addEventListener('resize', () => { this.checkIfMobile(data.nav, props.breakpoint, dist) })
+        this.setActiveLink(links, this.active)
     }
 
-    // disconnectedCallback() {
-    //     window.removeEventListener('resize', this.checkIfMobile)
-    // }
+    navBtnClick() {
+        const nav =  this.shadowRoot?.querySelector('header nav') as HTMLDivElement
+        nav.classList.toggle('show')
+    }
 
     setActiveLink(elements: NodeListOf<HTMLAnchorElement>, attr: string) {
         elements.forEach((link) => {
@@ -120,36 +111,7 @@ class Navbar extends HTMLElement {
     }
 
     createStyle(distance: number) {
-        const styles = `.show { transform: translateY(${distance}px) !important; }`;
-        const styleEl = this.shadowRoot?.querySelector('style')
-        if (styleEl)
-            styleEl.append(styles)
-    }
-
-    breakpointStyles(breakpoint: number) {
-        const styles = `
-        @media screen and (min-width: ${breakpoint}px) {
-        header {
-            box-shadow: var(--navbar-shadow);
-            overflow: hidden;
-        }
-        header div {
-            border-bottom: none !important;
-        }
-        header nav {
-            align-items: center;
-            flex-direction: row;
-            justify-content: flex-end;
-            padding: 0 1rem 0 0;
-            position: relative !important;
-            transform: translateY(0) !important;
-            z-index: unset;
-        }
-        header nav a {
-            padding: 0 1rem;
-        }
-        }
-        `
+        const styles = `.show { transform: translateY(${distance}px); }`;
         const styleEl = this.shadowRoot?.querySelector('style')
         if (styleEl)
             styleEl.append(styles)
@@ -159,9 +121,15 @@ class Navbar extends HTMLElement {
         return nav.offsetHeight
     }
 
-    checkIfMobile(nav: HTMLDivElement, breakpoint: number, distance: number) {
-        if (window.innerWidth < breakpoint) {
-            nav.style.transform = `translateY(-${distance}px)`
+    checkIfMobile() {
+        if (!this.navRef.value)
+            return
+
+        const nav = this.navRef.value
+
+        const isMobile = window.innerWidth < this.breakpoint
+        if (isMobile) {
+            nav.style.transform = `translateY(-${this.distance}px)`
             setTimeout(() => {
                 nav.classList.add('animate')
             }, 1)
@@ -170,91 +138,45 @@ class Navbar extends HTMLElement {
             nav.classList.remove('animate')
         }
     }
-}
 
-const navbarBtn = document.createElement('template')
-navbarBtn.innerHTML = `
-<style>
-  button {
-    background-color: transparent;
-    border: none;
-    cursor: pointer;
-    display: inline-block;
-    padding-right: 0;
-    outline: none;
-    -webkit-tap-highlight-color: rgba(0,0,0,0) !important;
-  }
-  div {
-    background-color: #333333;
-    border-radius: 4px;
-    height: 5px;
-    margin: 6px 0;
-    transition: 0.4s;
-    width: 35px;
-  }
-  .change div:nth-child(1) {
-    -webkit-transform: rotate(-45deg) translate(-8px, 6px);
-    transform: rotate(-45deg) translate(-8px, 6px);
-  }
-  .change div:nth-child(2) {
-    opacity: 0;
-    }
-  .change div:nth-child(3) {
-    -webkit-transform: rotate(45deg) translate(-9px, -8px);
-    transform: rotate(45deg) translate(-9px, -8px);
-  }
-  .nav--show {
-    transform: translateY(152px) !important;
-  }
-  @media screen and (min-width: 36rem) {
-    button {
-      display: none;
-    }
-  }
-</style>
-<button aria-label="Menu Button">
-  <div></div>
-  <div></div>
-  <div></div>
-</button>
-`
-
-class NavbarBtn extends HTMLElement {
-    breakpoint = 10
-    btn: HTMLButtonElement | null = null
-    constructor(breakpoint: number) {
-        super()
-        this.attachShadow({ mode: 'open' })
-        this.shadowRoot!.appendChild(navbarBtn.content.cloneNode(true))
-        this.breakpoint = breakpoint
-    }
-
-    connectedCallback() {
-        if (!this.shadowRoot)
-            return
-
-        this.btn = this.shadowRoot.querySelector('button') as HTMLButtonElement
-
-        this.btn.addEventListener('click', () => {
-            if (this.btn)
-                this.btn.classList.toggle('change')
-        })
-
-        window.addEventListener('resize', () => this.reset(this.btn, this.breakpoint))
-    }
-
-    disconnectedCallback() {
-        window.removeEventListener('resize', () => this.reset(this.btn, this.breakpoint))
-    }
-
-    reset(element: HTMLElement | null, breakpoint: number) {
-        if (!element)
-            return
-        if (window.innerWidth > breakpoint && element.classList.contains('change')) {
-            element.classList.remove('change')
-        }
+    render() {
+        const styles = css`
+            @media screen and (max-width: 640px) {
+                /* header {
+                    box-shadow: var(--navbar-shadow);
+                    overflow: hidden;
+                }
+                header div {
+                    border-bottom: none;
+                } */
+                header nav {
+                    align-items: center;
+                    flex-direction: column;
+                    justify-content: flex-end;
+                    padding: 0 1rem 0 0;
+                    position: relative;
+                    transform: translateY(0);
+                    z-index: unset;
+                }
+                /* header nav a {
+                    padding: 0 1rem;
+                } */
+            }
+        `
+        return html`
+            <style>
+                ${unsafeCSS(styles)}
+            </style>
+            <header ${ref(this.headerRef)}>
+                <div>
+                    <slot name="brand" class="logo"></slot>
+                    <navbar-btn breakpoint="${this.breakpoint}">
+                    </navbar-btn>
+                </div>
+                <nav ${ref(this.navRef)}>
+                    <slot></slot>
+                </nav>
+            </header>
+        `
     }
 }
-
-window.customElements.define('navbar-btn', NavbarBtn)
-window.customElements.define('navigation-bar', Navbar)
