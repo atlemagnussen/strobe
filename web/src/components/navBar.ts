@@ -1,8 +1,8 @@
 import { LitElement, css, html, unsafeCSS } from "lit"
-import { customElement, property } from "lit/decorators.js"
+import { customElement, property, state } from "lit/decorators.js"
 import { createRef, ref } from "lit/directives/ref.js"
-
-import "./navBarBtn"
+import { classMap } from "lit/directives/class-map.js"
+import "./navButton"
 
 @customElement('navigation-bar')
 export class Navbar extends LitElement {
@@ -27,13 +27,18 @@ export class Navbar extends LitElement {
             padding: 0 1rem;
             width: 100%;
             z-index: 99;
+            position: relative;
         }
-        header nav {
+        header nav-button {
+            display: none;
+        }
+        nav {
             background-color: var(--navbar-menu-color);
             border-bottom: 1px solid rgba(51, 51, 51, 0.1);
             box-shadow: var(--navbar-shadow);
             display: flex;
             flex-direction: row;
+            justify-content: end;
             padding: 1rem 0;
             width: 100%;
         }
@@ -71,6 +76,10 @@ export class Navbar extends LitElement {
     navRef = createRef<HTMLDivElement>()
 
     distance = 0
+
+    @state()
+    menuOpen = false
+
     connectedCallback() {
         super.connectedCallback()
         
@@ -98,10 +107,13 @@ export class Navbar extends LitElement {
     }
 
     navBtnClick() {
-        const nav =  this.shadowRoot?.querySelector('header nav') as HTMLDivElement
-        nav.classList.toggle('show')
+        this.menuOpen = !this.menuOpen
     }
 
+    closeNav() {
+        this.menuOpen = false
+    }
+    
     setActiveLink(elements: NodeListOf<HTMLAnchorElement>, attr: string) {
         elements.forEach((link) => {
             if (link.innerHTML.toLowerCase() === attr.toLowerCase()) {
@@ -121,27 +133,26 @@ export class Navbar extends LitElement {
         return nav.offsetHeight
     }
 
+    isMobile = false
     checkIfMobile() {
-        if (!this.navRef.value)
-            return
+        this.isMobile = window.innerWidth < this.breakpoint
 
-        const nav = this.navRef.value
-
-        const isMobile = window.innerWidth < this.breakpoint
-        if (isMobile) {
-            nav.style.transform = `translateY(-${this.distance}px)`
-            setTimeout(() => {
-                nav.classList.add('animate')
-            }, 1)
-        } else {
-            nav.classList.remove('show')
-            nav.classList.remove('animate')
-        }
+        // if (isMobile) {
+        //     nav.style.transform = `translateY(-${this.distance}px)`
+        //     setTimeout(() => {
+        //         nav.classList.add('animate')
+        //     }, 1)
+        // } else {
+        //     nav.classList.remove('animate')
+        // }
     }
 
     render() {
         const styles = css`
             @media screen and (max-width: 640px) {
+                header div nav-button {
+                    display: block;
+                }
                 /* header {
                     box-shadow: var(--navbar-shadow);
                     overflow: hidden;
@@ -154,26 +165,37 @@ export class Navbar extends LitElement {
                     flex-direction: column;
                     justify-content: flex-end;
                     padding: 0 1rem 0 0;
-                    position: relative;
-                    transform: translateY(0);
-                    z-index: unset;
+                    position: absolute;
+                    top: -100px;
+                    right: 0;
+                    z-index: 100;
+                    width: 200px;
+                    background: var(--primary-background);
+                    border-radius: 4px;
+                }
+
+                header nav.show {
+                    top: 0;
                 }
                 /* header nav a {
                     padding: 0 1rem;
                 } */
             }
         `
+
+        const classes = { show: this.menuOpen}
+
         return html`
             <style>
                 ${unsafeCSS(styles)}
             </style>
+
             <header ${ref(this.headerRef)}>
                 <div>
                     <slot name="brand" class="logo"></slot>
-                    <navbar-btn breakpoint="${this.breakpoint}">
-                    </navbar-btn>
+                    <nav-button .open=${this.menuOpen} @click=${this.navBtnClick}></nav-button>
                 </div>
-                <nav ${ref(this.navRef)}>
+                <nav ${ref(this.navRef)} class=${classMap(classes)} @click=${this.closeNav}>
                     <slot></slot>
                 </nav>
             </header>

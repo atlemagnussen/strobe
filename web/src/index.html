@@ -10,7 +10,7 @@
     <script type="module" src="./app.ts"></script>
 </head>
 <body>
-    <div id="app">
+    <main>
         <header>
             <navigation-bar active="home" breakpoint="640">
                 <a slot="brand" href="#" class="logo">Strobe</a>
@@ -18,9 +18,9 @@
                 <a href="about">About</a>
             </navigation-bar>
         </header>
-        <main>
+        <article>
             <router-slot></router-slot>
-        </main>
-    </div>
+        </article>
+    </main>
 </body>
 </html>

@@ -16,7 +16,7 @@ export class ColorPickerCustomElement extends HTMLElement {
         styleEl.innerHTML = `
             :host {
                 display: inline-block;
-                width: 300px;
+                width: 200px;
             }
         ` + style
         this.shadowRoot.appendChild(styleEl)

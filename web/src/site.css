@@ -18,7 +18,7 @@ body {
     flex-direction: row;
     justify-content: center;
 }
-div#app {
+main {
     overflow: hidden;
     width: 1024px;
     height: 100%;
@@ -27,12 +27,12 @@ div#app {
     padding: 0;
     margin: 0;
 }
-div#app main {
+main article {
     flex: auto 1 1;
 }
 
 @media only screen and (max-width: 1024px) {
-    div#app {
+    main {
         width: 100vw;
     }
 }
