@@ -149,7 +149,7 @@ export class Navbar extends LitElement {
                     justify-content: flex-end;
                     padding: 0 1rem 0 0;
                     position: absolute;
-                    top: -100px;
+                    top: -200px;
                     right: 0;
                     z-index: 100;
                     width: 150px;

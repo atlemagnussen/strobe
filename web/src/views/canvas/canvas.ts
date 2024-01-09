@@ -1,13 +1,10 @@
 import { LitElement, css, html } from "lit"
 import { customElement, state } from "lit/decorators.js"
 import { createRef, ref } from "lit/directives/ref.js"
-import { StrobeThree } from "./strobe.three"
 import { Subscription } from "rxjs"
-import { isImmersiveVrSupported, startSession, endSession } from "@app/services/webXrService"
-import { config } from "@app/stores/configStore"
 
-@customElement('strobe-vr')
-export class StrobeVr extends LitElement {
+@customElement('strobe-canvas')
+export class CanvasView extends LitElement {
     static styles = css`
         :host {
             overflow: hidden;
@@ -27,8 +24,6 @@ export class StrobeVr extends LitElement {
             background-color: #444;
         }
         div.menu {
-            width: 100%;
-            max-width: 100%;
             padding: 0 1rem;
             display: flex;
             flex-direction: column;
@@ -37,22 +32,18 @@ export class StrobeVr extends LitElement {
         .menu-item {
             display: flex;
             flex-direction: row;
-            width: 100%;
-            max-width: 100%;
         }
         .menu-item * {
             flex: 50% 0 0;
         }
-        
     `
     canvasRef = createRef<HTMLCanvasElement>()
-    threeRenderer : StrobeThree | null = null
     
     constructor() {
         super()
     }
 
-    subs: Subscription[] = []
+    sub: Subscription | undefined
     isEnabled = false
     isSessionStarted = false
 
@@ -62,29 +53,11 @@ export class StrobeVr extends LitElement {
     connectedCallback(): void {
         super.connectedCallback()
         window.addEventListener("resize", () => this.resizeCanvas())
-        this.subs.push(isImmersiveVrSupported.subscribe(state => {
-            const sessionStarted = state.sessionStarted!!
-
-            if (this.isSessionStarted && !sessionStarted) {
-                // session ended
-                this.threeRenderer?.endAnimation()
-                if (this.canvasRef.value)
-                    this.threeRenderer = new StrobeThree(this.canvasRef.value, this.clientWidth, this.clientHeight, this.selectedHz)
-            }
-
-            this.isEnabled = state.enabled
-            this.isSessionStarted = sessionStarted
-        }))
-
-        this.subs.push(config.subscribe(c => {
-            this.threeRenderer?.setFlickerHz(c.flickerHz)
-            this.threeRenderer?.setLightColor(c.lightColor)
-        }))
+        
     }
     disconnectedCallback(): void {
         super.disconnectedCallback()
         window.removeEventListener("resize", () => this.resizeCanvas())
-        this.subs.map(s => s.unsubscribe())
     }
     
     setupCanvasAndThree() {
@@ -92,7 +65,6 @@ export class StrobeVr extends LitElement {
             return
         
         this.resizeCanvas()
-        this.threeRenderer = new StrobeThree(this.canvasRef.value, this.clientWidth, this.clientHeight, this.selectedHz)
     }
     
     resizeCanvas() {
@@ -101,8 +73,6 @@ export class StrobeVr extends LitElement {
             canvasEl.width = this.clientWidth
             canvasEl.height = this.clientHeight
         }
-        if (this.threeRenderer)
-            this.threeRenderer.onWindowResize(this.clientWidth, this.clientHeight)
     }
 
     async vrButtonClicked() {
@@ -110,16 +80,9 @@ export class StrobeVr extends LitElement {
             return
 
         if (this.isSessionStarted) {
-            endSession()
-            this.threeRenderer?.endAnimation()
         }
-        else {
-            const session = await startSession("immersive-vr")
-            if (session)
-                this.threeRenderer?.start(session)
-        }
+        
     }
-
     firstUpdated() {
         this.setupCanvasAndThree()
     }
@@ -127,7 +90,7 @@ export class StrobeVr extends LitElement {
     render() {
         return html`
             <header>
-                <h2>VR version</h2>
+                <h2>Canvas version</h2>
             </header>
             <article>
                 <div class="menu">
@@ -140,7 +103,6 @@ export class StrobeVr extends LitElement {
                         <color-picker></color-picker>
                     </div>
                 </div>
-                <xr-button @click=${this.vrButtonClicked}></xr-button>
                 <canvas ${ref(this.canvasRef)}></canvas>
             </article>
         `

@@ -5,3 +5,6 @@ import "./routes"
 import "./components/xrButton"
 import "./components/colorPicker"
 import "./components/navBar"
+import "./components/frequencySelector"
+
+import "@thednp/color-picker"
