@@ -39,7 +39,7 @@ export class Navbar extends LitElement {
             display: flex;
             flex-direction: row;
             justify-content: end;
-            padding: 1rem 0;
+            padding: 0.7rem;
             width: 100%;
         }
         ::slotted(a) {
@@ -113,7 +113,7 @@ export class Navbar extends LitElement {
     closeNav() {
         this.menuOpen = false
     }
-    
+
     setActiveLink(elements: NodeListOf<HTMLAnchorElement>, attr: string) {
         elements.forEach((link) => {
             if (link.innerHTML.toLowerCase() === attr.toLowerCase()) {
