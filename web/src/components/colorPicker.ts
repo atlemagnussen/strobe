@@ -1,10 +1,8 @@
 import ColorPicker from "@thednp/color-picker"
 import style from "@thednp/color-picker/dist/css/color-picker.css?inline"
-import { config, setLightColor } from "@app/stores/configStore"
-import { Subscription } from "rxjs"
+import { getCurrentConfig, setLightColor } from "@app/stores/configStore"
 
 export class ColorPickerCustomElement extends HTMLElement {
-    sub: Subscription | null = null
 
     constructor() {
         super()
@@ -14,7 +12,14 @@ export class ColorPickerCustomElement extends HTMLElement {
     myPicker: ColorPicker | null = null
     inputEl: HTMLInputElement | null = null
 
+    color = "#069"
     connectedCallback() {
+        const config = getCurrentConfig()
+        this.color = config.lightColor
+        this.setup()
+    }
+
+    setup() {
         if (!this.shadowRoot)
             return
 
@@ -42,19 +47,14 @@ export class ColorPickerCustomElement extends HTMLElement {
         inputEl.dataset.format="hex"
         inputEl.dataset.colorPresets = "red,green,blue"
         inputEl.classList.add("color-preview")
-        inputEl.value = "#069"
+        // inputEl.value = "#069"
+        inputEl.setAttribute("value", this.color)
 
         this.myPicker = new ColorPicker(inputEl)
 
-        inputEl.addEventListener("colorpicker.change", () => this.setValue())
         this.inputEl = inputEl
-
-        this.sub = config.subscribe(c => {
-            if (this.inputEl)
-                this.inputEl.value = c.lightColor
-        })
+        inputEl.addEventListener("colorpicker.change", () => this.setValue())
     }
-
     get value() {
         if (!this.inputEl)
             return ""
@@ -70,8 +70,6 @@ export class ColorPickerCustomElement extends HTMLElement {
     disconnectedCallback() {
         if (this.inputEl)
             this.inputEl.removeEventListener("colorpicker.change", this.setValue)
-        if (this.sub)
-            this.sub.unsubscribe()
         
         if (this.shadowRoot) {
             let child = this.shadowRoot.lastElementChild
@@ -80,6 +78,7 @@ export class ColorPickerCustomElement extends HTMLElement {
                 child = this.shadowRoot.lastElementChild
             }
         }
+        this.myPicker?.dispose()
         this.myPicker = null
     }
 }
