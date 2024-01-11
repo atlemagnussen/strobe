@@ -72,4 +72,3 @@ export class FreqSelector extends LitElement {
         `
     }
 }
-                
