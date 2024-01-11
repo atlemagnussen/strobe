@@ -23,6 +23,11 @@ interface ConfigStore {
 const configSubject = new BehaviorSubject<ConfigStore>(initialValue)
 export const config = configSubject.asObservable()
 
+export function getCurrentConfig() {
+    const current = configSubject.value
+    return current
+}
+
 export function setFlickerHz(flicker: number) {
     const newConfig = configSubject.value
     newConfig.flickerHz = flicker
