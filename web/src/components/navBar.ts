@@ -1,6 +1,5 @@
 import { LitElement, css, html, unsafeCSS } from "lit"
-import { customElement, property, state } from "lit/decorators.js"
-import { createRef, ref } from "lit/directives/ref.js"
+import { customElement, property, query, queryAll, state } from "lit/decorators.js"
 import { classMap } from "lit/directives/class-map.js"
 import "./navButton"
 
@@ -72,8 +71,14 @@ export class Navbar extends LitElement {
     @property({attribute: true})
     active = ""
 
-    headerRef = createRef<HTMLDivElement>()
-    navRef = createRef<HTMLDivElement>()
+    @query("header")
+    headerEl!: HTMLDivElement
+
+    @query("nav")
+    navEl!: HTMLDivElement
+
+    @queryAll("nav a")
+    links!: NodeListOf<HTMLAnchorElement>
 
     distance = 0
 
@@ -85,23 +90,14 @@ export class Navbar extends LitElement {
     }
 
     firstUpdated() {
-        const links = document.querySelectorAll('navigation-bar a') as NodeListOf<HTMLAnchorElement>
-        
-        if (!this.navRef.value)
-            return
 
-        const nav = this.navRef.value
-        this.distance = nav.offsetHeight - 32
+        this.distance = this.navEl.offsetHeight - 32
 
         this.checkIfMobile()
 
-        if (!this.headerRef.value)
-            return
+        this.createStyle(this.headerEl.offsetHeight)
 
-        const header = this.headerRef.value
-        this.createStyle(header.offsetHeight)
-
-        this.setActiveLink(links, this.active)
+        this.setActiveLink(this.links, this.active)
     }
 
     navBtnClick() {
@@ -174,12 +170,12 @@ export class Navbar extends LitElement {
                 ${unsafeCSS(styles)}
             </style>
 
-            <header ${ref(this.headerRef)}>
+            <header>
                 <div>
                     <slot name="brand" class="logo"></slot>
                     <nav-button .open=${this.menuOpen} @click=${this.navBtnClick}></nav-button>
                 </div>
-                <nav ${ref(this.navRef)} class=${classMap(classes)} @click=${this.closeNav}>
+                <nav class=${classMap(classes)} @click=${this.closeNav}>
                     <slot></slot>
                 </nav>
             </header>

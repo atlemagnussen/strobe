@@ -3,6 +3,9 @@ import { customElement, state } from "lit/decorators.js"
 import { createRef, ref } from "lit/directives/ref.js"
 import { Subscription } from "rxjs"
 
+import { CanvasRenderer } from "./canvasRenderer.js"
+import { config } from "@app/stores/configStore.js"
+
 @customElement('strobe-canvas')
 export class CanvasView extends LitElement {
     static styles = css`
@@ -23,6 +26,11 @@ export class CanvasView extends LitElement {
         canvas {
             background-color: #444;
         }
+        canvas.fullscreen {
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
         div.menu {
             padding: 0 1rem;
             display: flex;
@@ -36,55 +44,64 @@ export class CanvasView extends LitElement {
         .menu-item * {
             flex: 50% 0 0;
         }
+        button {
+            z-index: 10;
+        }
     `
     canvasRef = createRef<HTMLCanvasElement>()
+    renderer: CanvasRenderer | undefined
     
     constructor() {
         super()
     }
 
+    started = false
     sub: Subscription | undefined
-    isEnabled = false
+    
     isSessionStarted = false
 
     @state()
     selectedHz = 7.83
     
-    connectedCallback(): void {
+    connectedCallback() {
         super.connectedCallback()
-        window.addEventListener("resize", () => this.resizeCanvas())
-        
+        this.sub = config.subscribe(c => {
+            this.renderer?.setFlickerHz(c.flickerHz)
+            this.renderer?.setLightColor(c.lightColor)
+        })
     }
     disconnectedCallback(): void {
         super.disconnectedCallback()
-        window.removeEventListener("resize", () => this.resizeCanvas())
+        if (this.sub)
+            this.sub.unsubscribe()
     }
-    
-    setupCanvasAndThree() {
+    setupCanvas() {
         if (!this.canvasRef.value)
             return
         
-        this.resizeCanvas()
-    }
-    
-    resizeCanvas() {
-        if (this.canvasRef.value) {
-            const canvasEl = this.canvasRef.value
-            canvasEl.width = this.clientWidth
-            canvasEl.height = this.clientHeight
-        }
+        this.renderer = new CanvasRenderer(this.canvasRef.value, this.clientWidth, this.clientHeight)
+
+        this.renderer.setSize(this.clientWidth, this.clientHeight)
     }
 
-    async vrButtonClicked() {
-        if (!this.isEnabled)
+    btnClicked() {
+        if (!this.renderer)
             return
-
-        if (this.isSessionStarted) {
+        if (!this.started) {
+            this.canvasRef.value?.classList.add("fullscreen")
+            this.renderer.setFullScreen()
+            this.renderer.start()
+            this.started = true
         }
-        
+        else {
+            this.started = false
+            this.canvasRef.value?.classList.remove("fullscreen")
+            this.renderer.setSize(this.clientWidth, this.clientHeight)
+            this.renderer.stop()
+        }
     }
     firstUpdated() {
-        this.setupCanvasAndThree()
+        this.setupCanvas()
     }
 
     render() {
@@ -101,6 +118,10 @@ export class CanvasView extends LitElement {
                     <div class="menu-item">
                         <label for="color">Light color</label>
                         <color-picker></color-picker>
+                    </div>
+                    <div class="menu-item">
+                        <strobe-button type="button" 
+                            @click=${this.btnClicked}>Toggle</strobe-button>
                     </div>
                 </div>
                 <canvas ${ref(this.canvasRef)}></canvas>
