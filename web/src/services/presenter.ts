@@ -3,12 +3,16 @@ import { BehaviorSubject } from "rxjs"
 const presenterSubject = new BehaviorSubject("msg")
 export const presenterMsg = presenterSubject.asObservable()
 
-const addConnection = (connection: any) => {
+const addConnection = (connection: PresentationConnection) => {
     connection.onmessage = (message: any) => {
         if (message && message.data)
             presenterSubject.next(message.data)
         if (message.data === "Say hello")
             connection.send("hello")
+    }
+    connection.onclose = () => {
+        presenterSubject.next("close")
+        connection.close()
     }
 }
 

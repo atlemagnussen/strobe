@@ -1,4 +1,4 @@
-import { LitElement, css, html, nothing } from "lit"
+import { LitElement, css, html } from "lit"
 import { customElement, state } from "lit/decorators.js"
 import { createRef, ref } from "lit/directives/ref.js"
 import { Subscription } from "rxjs"
@@ -104,7 +104,13 @@ export class CanvasView extends LitElement {
         this.renderer.setSize(this.clientWidth, this.clientHeight)
     }
 
-    btnClicked() {
+    toggleFlicker() {
+
+        if (this.connectionActive) {
+            this.sendToggle()
+            return
+        }
+
         if (!this.renderer)
             return
         if (!this.started) {
@@ -159,18 +165,15 @@ export class CanvasView extends LitElement {
                         <color-picker></color-picker>
                     </div>
                     <div class="menu-item">
-                        <strobe-button type="button" 
-                            @click=${this.btnClicked}>Toggle</strobe-button>
+                        <strobe-button type="button" @click=${this.toggleFlicker}>
+                            ${this.connectionActive ? html`Toggle presentation`
+                            : html`Toggle`}
+                        </strobe-button>
                     </div>
                     <div>
                         <strobe-button @click=${this.present}>
                             ${castingBtnTxt}
                         </strobe-button>
-                        ${this.connectionActive ? html`
-                        <strobe-button @click=${this.sendToggle}>
-                            Toggle flicker
-                        </strobe-button>
-                        `: nothing}
                     </div>
                 </div>
                 <canvas ${ref(this.canvasRef)}></canvas>
