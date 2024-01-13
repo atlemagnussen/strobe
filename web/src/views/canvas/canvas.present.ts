@@ -3,8 +3,9 @@ import { customElement, state } from "lit/decorators.js"
 import { createRef, ref } from "lit/directives/ref.js"
 import { CanvasRenderer } from "./canvasRenderer.js"
 
-import { presenterMsg } from "@app/services/presenter.js"
+import { presenterMsg, initiatePresenter } from "@app/services/presenter.js"
 import { Subscription } from "rxjs"
+import { ConfigStore } from "@app/stores/configStore.js"
 
 @customElement('canvas-present')
 export class CanvasPresent extends LitElement {
@@ -48,7 +49,22 @@ export class CanvasPresent extends LitElement {
         this.sub = presenterMsg.subscribe(msg => {
             if (msg === "toggle")
                 this.toggle()
+
+            try {
+                let config = JSON.parse(msg) as ConfigStore
+                if (config && this.renderer) {
+                    if (config.flickerHz)
+                        this.renderer.setFlickerHz(config.flickerHz)
+                    
+                    if (config.lightColor)
+                        this.renderer.setLightColor(config.lightColor)
+                }
+            }
+            catch(e) {
+                console.log(e)
+            }
         })
+        initiatePresenter()
     }
     disconnectedCallback() {
         super.disconnectedCallback()
@@ -73,7 +89,7 @@ export class CanvasPresent extends LitElement {
     toggle() {
         if (!this.renderer)
             return
-        
+
         if (!this.started) {
             this.canvasRef.value?.classList.add("fullscreen")
             this.renderer.setFullScreen()

@@ -15,7 +15,7 @@ if (localStorageAvailable) {
     }
 }
 
-interface ConfigStore {
+export interface ConfigStore {
     flickerHz: number
     lightColor: string
 }

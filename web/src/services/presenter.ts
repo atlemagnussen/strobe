@@ -12,13 +12,16 @@ const addConnection = (connection: any) => {
     }
 }
 
-///@ts-ignore
-navigator.presentation.receiver.connectionList.then((list) => {
-    list.connections.forEach((connection: any) => {
-      addConnection(connection)
+export function initiatePresenter() {
+    ///@ts-ignore
+    navigator.presentation.receiver.connectionList.then((list) => {
+        list.connections.forEach((connection: any) => {
+        addConnection(connection)
+        })
+        list.onconnectionavailable = (evt: any) => {
+            addConnection(evt.connection)
+        }
     })
-    list.onconnectionavailable = (evt: any) => {
-        addConnection(evt.connection)
-    }
-})
+}
+
   

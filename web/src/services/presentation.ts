@@ -24,7 +24,7 @@ export async function startPresentation() {
     const connection = await request.start()
     console.log(connection)
     setConnection(connection)
-    return connection
+    return connection as PresentationConnection
 }
 
 let connection: PresentationConnection | null = null

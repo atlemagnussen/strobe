@@ -1,4 +1,4 @@
-import { LitElement, css, html } from "lit"
+import { LitElement, css, html, nothing } from "lit"
 import { customElement, state } from "lit/decorators.js"
 import { createRef, ref } from "lit/directives/ref.js"
 import { Subscription } from "rxjs"
@@ -65,12 +65,26 @@ export class CanvasView extends LitElement {
 
     @state()
     selectedHz = 7.83
+
+    @state()
+    connectionActive = false
+
+    connection: PresentationConnection | undefined
+
+    sendToggle() {
+        if (this.connection)
+            this.connection.send("toggle")
+    }
     
     connectedCallback() {
         super.connectedCallback()
         this.subs.push(config.subscribe(c => {
-            this.renderer?.setFlickerHz(c.flickerHz)
-            this.renderer?.setLightColor(c.lightColor)
+            if (this.connectionActive && this.connection) {
+                this.connection.send(JSON.stringify(c))
+            } else {
+                this.renderer?.setFlickerHz(c.flickerHz)
+                this.renderer?.setLightColor(c.lightColor)
+            }
         }))
 
         this.subs.push(presentationReady.subscribe(isReadyToCast => {
@@ -79,8 +93,7 @@ export class CanvasView extends LitElement {
     }
     disconnectedCallback(): void {
         super.disconnectedCallback()
-        if (this.sub)
-            this.sub.unsubscribe()
+        this.subs.map(s => s.unsubscribe())
     }
     setupCanvas() {
         if (!this.canvasRef.value)
@@ -111,12 +124,26 @@ export class CanvasView extends LitElement {
         this.setupCanvas()
     }
 
-    present() {
+    async present() {
         console.log("isReadyToCast", this.isReadyToCast)
-        if (this.isReadyToCast)
-            startPresentation()
+
+        if (this.connectionActive && this.connection) {
+            this.connection.close()
+            this.connectionActive = false
+        }
+        else if (this.isReadyToCast) {
+            this.connection = await startPresentation()
+            this.connectionActive = true
+        }
     }
     render() {
+
+        let castingBtnTxt = "Not ready to cast"
+        if (this.connectionActive)
+            castingBtnTxt = "Casting"
+        else if (this.isReadyToCast)
+            castingBtnTxt = "Cast"
+
         return html`
             <header>
                 <h2>Canvas version</h2>
@@ -137,12 +164,13 @@ export class CanvasView extends LitElement {
                     </div>
                     <div>
                         <strobe-button @click=${this.present}>
-                            ${this.isReadyToCast ? html`
-                                Cast
-                            `: html`
-                                Cast not ready
-                            `}
+                            ${castingBtnTxt}
                         </strobe-button>
+                        ${this.connectionActive ? html`
+                        <strobe-button @click=${this.sendToggle}>
+                            Toggle flicker
+                        </strobe-button>
+                        `: nothing}
                     </div>
                 </div>
                 <canvas ${ref(this.canvasRef)}></canvas>
