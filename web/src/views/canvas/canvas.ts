@@ -2,7 +2,7 @@ import { LitElement, css, html } from "lit"
 import { customElement, state } from "lit/decorators.js"
 import { createRef, ref } from "lit/directives/ref.js"
 import { Subscription } from "rxjs"
-
+import { startPresentation } from "@app/services/presentation.js"
 import { CanvasRenderer } from "./canvasRenderer.js"
 import { config } from "@app/stores/configStore.js"
 
@@ -104,6 +104,10 @@ export class CanvasView extends LitElement {
         this.setupCanvas()
     }
 
+    present() {
+        console.log("present")
+        startPresentation()
+    }
     render() {
         return html`
             <header>
@@ -122,6 +126,9 @@ export class CanvasView extends LitElement {
                     <div class="menu-item">
                         <strobe-button type="button" 
                             @click=${this.btnClicked}>Toggle</strobe-button>
+                    </div>
+                    <div>
+                        <strobe-button @click=${this.present}>Cast</strobe-button>
                     </div>
                 </div>
                 <canvas ${ref(this.canvasRef)}></canvas>

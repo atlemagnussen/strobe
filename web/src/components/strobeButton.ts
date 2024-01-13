@@ -6,11 +6,9 @@ export class StrobeButton extends LitElement {
     static styles = css`
         :host {
             display: inline-flex;
-            position: absolute;
             bottom: 20px;
             z-index: 999;
             cursor: pointer;
-            left: calc(50% - 50px);
         }
         button {
             padding: 12px 6px;

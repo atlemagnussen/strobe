@@ -7,7 +7,7 @@ const setPresentationReady = (val: boolean) => {
     presentationReadySubject.next(val)
 }
 
-const presUrls = ["https://unveil.web.app/board/1"]
+const presUrls = [`${location.origin}/present`]
 
 
 let request: any = null

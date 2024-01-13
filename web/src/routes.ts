@@ -3,6 +3,7 @@ import { StrobeVr } from "./views/strobeVr/strobe"
 import "./views/home"
 import "./views/about"
 import "./views/canvas/canvas"
+import "./views/canvas/canvas.present"
 
 customElements.whenDefined("router-slot").then(() => {
     const routerSlot = document.querySelector("router-slot")
@@ -24,6 +25,10 @@ customElements.whenDefined("router-slot").then(() => {
         {
             path: "about",
             component: document.createElement("about-view")
+        },
+        {
+            "path": "present",
+            component: document.createElement("canvas-present")
         },
         {
             path: "**",
