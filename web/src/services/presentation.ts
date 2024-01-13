@@ -20,10 +20,11 @@ const init = async () => {
     availability.onchange = function() { setPresentationReady(this.value) }
 }
 
-export const startPresentation = async () => {
+export async function startPresentation() {
     const connection = await request.start()
     console.log(connection)
     setConnection(connection)
+    return connection
 }
 
 let connection: PresentationConnection | null = null

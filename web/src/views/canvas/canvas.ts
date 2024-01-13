@@ -2,7 +2,7 @@ import { LitElement, css, html } from "lit"
 import { customElement, state } from "lit/decorators.js"
 import { createRef, ref } from "lit/directives/ref.js"
 import { Subscription } from "rxjs"
-import { startPresentation } from "@app/services/presentation.js"
+import { startPresentation, presentationReady } from "@app/services/presentation.js"
 import { CanvasRenderer } from "./canvasRenderer.js"
 import { config } from "@app/stores/configStore.js"
 
@@ -56,19 +56,26 @@ export class CanvasView extends LitElement {
     }
 
     started = false
-    sub: Subscription | undefined
+    subs: Subscription[] = []
     
     isSessionStarted = false
+
+    @state()
+    isReadyToCast = false
 
     @state()
     selectedHz = 7.83
     
     connectedCallback() {
         super.connectedCallback()
-        this.sub = config.subscribe(c => {
+        this.subs.push(config.subscribe(c => {
             this.renderer?.setFlickerHz(c.flickerHz)
             this.renderer?.setLightColor(c.lightColor)
-        })
+        }))
+
+        this.subs.push(presentationReady.subscribe(isReadyToCast => {
+            this.isReadyToCast = isReadyToCast
+        }))
     }
     disconnectedCallback(): void {
         super.disconnectedCallback()
@@ -105,8 +112,9 @@ export class CanvasView extends LitElement {
     }
 
     present() {
-        console.log("present")
-        startPresentation()
+        console.log("isReadyToCast", this.isReadyToCast)
+        if (this.isReadyToCast)
+            startPresentation()
     }
     render() {
         return html`
@@ -128,7 +136,13 @@ export class CanvasView extends LitElement {
                             @click=${this.btnClicked}>Toggle</strobe-button>
                     </div>
                     <div>
-                        <strobe-button @click=${this.present}>Cast</strobe-button>
+                        <strobe-button @click=${this.present}>
+                            ${this.isReadyToCast ? html`
+                                Cast
+                            `: html`
+                                Cast not ready
+                            `}
+                        </strobe-button>
                     </div>
                 </div>
                 <canvas ${ref(this.canvasRef)}></canvas>

@@ -1,8 +1,10 @@
 import { LitElement, css, html } from "lit"
 import { customElement, state } from "lit/decorators.js"
 import { createRef, ref } from "lit/directives/ref.js"
-
 import { CanvasRenderer } from "./canvasRenderer.js"
+
+import { presenterMsg } from "@app/services/presenter.js"
+import { Subscription } from "rxjs"
 
 @customElement('canvas-present')
 export class CanvasPresent extends LitElement {
@@ -35,8 +37,23 @@ export class CanvasPresent extends LitElement {
     canvasRef = createRef<HTMLCanvasElement>()
     renderer: CanvasRenderer | undefined
     
+    sub: Subscription | undefined
+
     constructor() {
         super()
+    }
+
+    connectedCallback() {
+        super.connectedCallback()
+        this.sub = presenterMsg.subscribe(msg => {
+            if (msg === "toggle")
+                this.toggle()
+        })
+    }
+    disconnectedCallback() {
+        super.disconnectedCallback()
+        if (this.sub)
+            this.sub.unsubscribe()
     }
 
     started = false
@@ -56,6 +73,7 @@ export class CanvasPresent extends LitElement {
     toggle() {
         if (!this.renderer)
             return
+        
         if (!this.started) {
             this.canvasRef.value?.classList.add("fullscreen")
             this.renderer.setFullScreen()
