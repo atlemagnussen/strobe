@@ -157,7 +157,7 @@ export class CanvasView extends LitElement {
             <article>
                 <div class="menu">
                     <div class="menu-item">
-                        <label for="req">Flicker</label>
+                        <label for="req">Flicker Hz</label>
                         <frequency-selector></frequency-selector>
                     </div>
                     <div class="menu-item">
@@ -169,11 +169,12 @@ export class CanvasView extends LitElement {
                             ${this.connectionActive ? html`Toggle presentation`
                             : html`Toggle`}
                         </strobe-button>
-                    </div>
-                    <div>
+
                         <strobe-button @click=${this.present}>
                             ${castingBtnTxt}
                         </strobe-button>
+                    </div>
+                    <div>
                     </div>
                 </div>
                 <canvas ${ref(this.canvasRef)}></canvas>

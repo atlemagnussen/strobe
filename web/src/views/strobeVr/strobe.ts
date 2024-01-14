@@ -132,7 +132,7 @@ export class StrobeVr extends LitElement {
             <article>
                 <div class="menu">
                     <div class="menu-item">
-                        <label for="req">Flicker</label>
+                        <label for="req">Flicker Hz</label>
                         <frequency-selector></frequency-selector>
                     </div>
                     <div class="menu-item">
