@@ -10,3 +10,13 @@ declare module "three/addons/webxr/XRPlanes.js" {
         constructor(renderer: any)
     }
 }
+
+declare module "three/addons/capabilities/WebGPU.js" {
+    export function isAvailable(): boolean
+}
+
+declare module "three/addons/renderers/webgpu/WebGPURenderer.js" {
+    export default class WebGPURenderer {
+        constructor(parameters: any)
+    }
+}
